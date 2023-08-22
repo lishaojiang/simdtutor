@@ -44,5 +44,3 @@ else()
 endif()
 target_link_libraries(main PUBLIC OpenMP::OpenMP_CXX)
 
-message(STATUS  "--->>> using CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS} )
-message(STATUS  "--->>> using CMAKE_OCMPILER:" ${COMPILE_LANG_AND_ID} )
