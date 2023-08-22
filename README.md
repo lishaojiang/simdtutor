@@ -199,3 +199,6 @@ CPU-Z 指令集扩展检测工具：https://www.cpuid.com/softwares/cpu-z.html
 建议导入 <immintrin.h>，自动包含所有指令集扩展。
 
 注：本课程主打一个 SSE，介绍的指令集范围从 MMX 到 AVX2，均基于 x86 架构，暂时没有讲解 ARM NEON 指令集的计划，若为 ARM 硬件则可尝试用 sse2neon.h 兼容层实验，由于教师电脑不支持 AVX-512 所以也没有 AVX-512 的计划 <del>但可以长按一键三连赞助小彭老师购买</del>。
+
+## mac need install
+- brew install libomp
