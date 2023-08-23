@@ -209,6 +209,5 @@ CPU-Z 指令集扩展检测工具：https://www.cpuid.com/softwares/cpu-z.html
 - googlebench.sh
 - sudo apt-get install libomp-dev
 ## window need install
-- googletest.sh
-- googlebench.sh
-- sudo apt-get install libomp-dev
+- googletest.bat
+- googlebench.bat

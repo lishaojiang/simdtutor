@@ -16,10 +16,37 @@ target_compile_options(main PUBLIC
     $<$<COMPILE_LANG_AND_ID:CXX,AppleClang,Clang>:-mfma> 
     $<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/arch:AVX2>) # 如果你的电脑不支持 AVX2，请删除本行
 
+#windows install is not like unix posix
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#     message(STATUS "cmake with MSVC,add path:")
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/cmake)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/cmake/benchmark/)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib)
+#     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/cmake/GTest)
+#     #not work,fuck
+#     list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/cmake/GTest")
+#     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/cmake/GTest/)
+#     message(STATUS "cmake with prefix path: ${CMAKE_MODULE_PATH}")
+#    
+#     #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/include/)
+#     #link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/)
+#     #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/include/)
+#     #link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/)
+# endif()
 
-
+# ---------------------what the fuck-----------------------
+#what the fuck, benchmark_FOUND is not equal BENCHMARK_FOUND
+# ---------------------what the fuck-----------------------
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+find_package(benchmark REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/cmake/benchmark)
+else()
 find_package(benchmark REQUIRED)
-if(BENCHMARK_FOUND)
+endif()
+if(benchmark_FOUND)
     message(WARNING "Configuring with Google benchmark!")
 else()
     message(WARNING "Configuring without Google benchmark!")
@@ -27,17 +54,21 @@ endif()
 target_link_libraries(main PUBLIC benchmark::benchmark)
 target_link_libraries(main PUBLIC benchmark::benchmark_main)  # 测试性能时使用此行
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+find_package(GTest REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/cmake/GTest)
+else()
 find_package(GTest REQUIRED)
+endif()
 target_link_libraries(main PUBLIC GTest::gtest)
-if(GTEST_FOUND)
+if(GTest_FOUND)
     message(WARNING "Configuring with GoogleTest!")
 else()
     message(WARNING "Configuring without GoogleTest!")
 endif()
-# target_link_libraries(main PUBLIC GTest::gtest_main)  # 测试正确性时使用此行
+target_link_libraries(main PUBLIC GTest::gtest_main)  # 测试正确性时使用此行
 
 find_package(OpenMP REQUIRED)
-if(OPENMP_FOUND)
+if(OpenMP_FOUND)
     message(WARNING "Configuring with OpenMP!")
 else()
     message(WARNING "Configuring without OpenMP!")
