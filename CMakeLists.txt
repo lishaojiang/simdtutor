@@ -8,6 +8,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(main LANGUAGES CXX)
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/MT)
+endif()
+
 add_executable(main main.cpp)
 
 target_compile_options(main PUBLIC 
@@ -41,37 +45,37 @@ target_compile_options(main PUBLIC
 # ---------------------what the fuck-----------------------
 #what the fuck, benchmark_FOUND is not equal BENCHMARK_FOUND
 # ---------------------what the fuck-----------------------
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-find_package(benchmark REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/cmake/benchmark)
-else()
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#     #find_package(benchmark REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/benchmark/lib/cmake/benchmark)
+#     find_package(benchmark REQUIRED)
+# else()
+#     find_package(benchmark REQUIRED)
+# endif()
+# if(benchmark_FOUND)
+#     message(WARNING "Configuring with Google benchmark!")
+# else()
+#     message(WARNING "Configuring without Google benchmark!")
+# endif()
+
 find_package(benchmark REQUIRED)
-endif()
-if(benchmark_FOUND)
-    message(WARNING "Configuring with Google benchmark!")
-else()
-    message(WARNING "Configuring without Google benchmark!")
-endif()
 target_link_libraries(main PUBLIC benchmark::benchmark)
 target_link_libraries(main PUBLIC benchmark::benchmark_main)  # 测试性能时使用此行
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-find_package(GTest REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest-distribution/lib/cmake/GTest)
-else()
+# if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#     #find_package(GTest REQUIRED PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../GoogleOutPutLibrary/googletest/lib/cmake/GTest)
+#     find_package(GTest REQUIRED)
+# else()
+#     find_package(GTest REQUIRED)
+# endif()
+# if(GTest_FOUND)
+#     message(WARNING "Configuring with GoogleTest!")
+# else()
+#     message(WARNING "Configuring without GoogleTest!")
+# endif()
 find_package(GTest REQUIRED)
-endif()
 target_link_libraries(main PUBLIC GTest::gtest)
-if(GTest_FOUND)
-    message(WARNING "Configuring with GoogleTest!")
-else()
-    message(WARNING "Configuring without GoogleTest!")
-endif()
 target_link_libraries(main PUBLIC GTest::gtest_main)  # 测试正确性时使用此行
 
 find_package(OpenMP REQUIRED)
-if(OpenMP_FOUND)
-    message(WARNING "Configuring with OpenMP!")
-else()
-    message(WARNING "Configuring without OpenMP!")
-endif()
 target_link_libraries(main PUBLIC OpenMP::OpenMP_CXX)
 
