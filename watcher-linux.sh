@@ -30,26 +30,28 @@ do
         lastmd5="$newmd5"
         rm -f ./build/watch/.W$$.clang-error.log
         echo '-- Compiling...'
-        cat "$file" | sed '/\#include <benchmark\/benchmark.h>/d; /^static void \w\+(benchmark::State/,/^BENCHMARK(\w\+)/d' | sed '/\#include <gtest\/gtest.h>/d; /^TEST(\w\+, \w\+) {$/,/^}$/d' | tee "./build/watch/code.cpp"| "$cc" -S -x c++ /dev/stdin $cflags -o /dev/stdout 2> ./build/watch/.W$$.clang-error.log | sed 's/^\t\.\(align\|byte\|short\|long\|float\|quad\|rept\|string\|ascii\|asciz\)\t/  \.\1  /g' | sed '/^\t\..*[^:]$/d' | sed 's/\t/  /g' | sed '$a ; '"$(date +'Compiled at %Y\/%m\/%d %H:%M:%S')" | tee "$out"
+        cat "$file" | sed '/\#include <benchmark\/benchmark.h>/d; /^static void \w\+(benchmark::State/,/^BENCHMARK(\w\+)/d' | sed '/\#include <gtest\/gtest.h>/d;  /^TEST(\w\+, \w\+)/,/^}$/d' | "$cc" -S -x c++ /dev/stdin $cflags -o /dev/stdout 2> ./build/watch/.W$$.clang-error.log | sed 's/^\t\.\(align\|byte\|short\|long\|float\|quad\|rept\|string\|ascii\|asciz\)\t/  \.\1  /g' | sed '/^\t\..*[^:]$/d' | sed 's/\t/  /g' | sed '$a ; '"$(date +'Compiled at %Y\/%m\/%d %H:%M:%S')" | tee "$out" > /dev/null
         if [ -s ./build/watch/.W$$.clang-error.log ]
         then
             cat ./build/watch/.W$$.clang-error.log >> "$out"
-            echo 'compile error '
+            echo '-- compile error '
         else
             echo '-- Testing...'
             rm -f ./build/watch/.W$$.executable.out
             cat "$file" | sed '/\#include <benchmark\/benchmark.h>/d; /^static void \w\+(benchmark::State/,/^BENCHMARK(\w\+)/d' | "$cc" -x c++ /dev/stdin $cflags -o ./build/watch/.W$$.executable.out -lgtest -lgtest_main 2> ./build/watch/.W$$.clang-error.log
             if [ -f ./build/watch/.W$$.executable.out ]
             then
+                echo '-- Start Testing...'
                 ./build/watch/.W$$.executable.out | tee "$bench"
                 if [ x"$?" == x0 ]
                 then
                     # sed -n '/^\/\/ BEGIN CODE$/,/^\/\/ END CODE$/p' "$file" | sed '1d; $d' | python .watcher-helper.py "$result" "$record" "$bench"
                     echo '-- Benchmarking...'
                     rm -f ./build/watch/.W$$.executable.out
-                    cat "$file" | sed '/\#include <gtest\/gtest.h>/d; /^TEST(\w\+, \w\+) {$/,/^}$/d' | "$cc" -x c++ /dev/stdin $cflags -o ./build/watch/.W$$.executable.out -lbenchmark -lbenchmark_main 2> ./build/watch/.W$$.clang-error.log
+                    cat "$file" | sed '/\#include <gtest\/gtest.h>/d; /^TEST(\w\+, \w\+)/,/^}$/d' | "$cc" -x c++ /dev/stdin $cflags -o ./build/watch/.W$$.executable.out -lbenchmark -lbenchmark_main 2> ./build/watch/.W$$.clang-error.log
                     if [ -f ./build/watch/.W$$.executable.out ]
                     then
+                        echo '-- Start Benchmarking...'
                         ./build/watch/.W$$.executable.out --benchmark_min_time=0.2s --benchmark_repetitions=5 --benchmark_out="$result" 2>&1 | tee "$bench"
                         if [ x"$?" == x0 ]
                         then
