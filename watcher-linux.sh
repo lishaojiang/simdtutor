@@ -9,11 +9,12 @@ out="./build/watch/watched.s"
 bench="./build/watch/benched.cpp"
 result="./build/watch/result.json"
 record="./build/watch/record.json"
-cflags="-masm=intel -mavx2 -mfma -O3 -fopenmp"
+cflags="-masm=intel -mavx2 -mfma -O3 -fopenmp -std=c++2a"
 cc="clang++"
 
 #count=0
-rm -r build/watch
+rm -r build
+mkdir build
 mkdir build/watch
 
 lastmd5=
@@ -58,6 +59,7 @@ do
                             # sed '/^\#include <benchmark\/benchmark.h>$/d; /^\#include <gtest\/gtest.h>$/d' "$file" | sed -n '/^\(\#include\|namespace \w\+ =\|using namespace \)/p' | sed '$a' > "$bench"
                             echo '-- Start Python Calc Bench...'
                             sed -n '/^\/\/ BEGIN CODE$/,/^\/\/ END CODE$/p;' "$file" | sed '1d; $d' | python3 .watcher-helper.py "$result" "$record" > "$bench"
+                            echo '-- End All Work Bench And Test, wait again ...'
                         fi
                     else
                         cat ./build/watch/.W$$.clang-error.log | tee "$bench"
